@@ -1,5 +1,6 @@
 package com.ascrm.entity;
 
+import cn.hutool.core.date.DateTime;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,9 @@ import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import com.mybatisflex.annotation.Table;
 
-import java.util.Date;
 import java.lang.String;
 import java.lang.Integer;
+import java.time.LocalDateTime;
 
 /**
  * 实体类。
@@ -45,6 +46,12 @@ public class User {
     private String password;
 
     /**
+     * 角色: 1 管理员; 2 用户
+     */
+    @Column(value = "role")
+    private Integer role;
+
+    /**
      * 昵称
      */
     @Column(value = "nick_name")
@@ -75,12 +82,6 @@ public class User {
     private String phone;
 
     /**
-     * 权限: 1 管理员; 2 用户
-     */
-    @Column(value = "permission")
-    private Integer permission;
-
-    /**
      * 创建人
      */
     @Column(value = "created_by")
@@ -90,7 +91,7 @@ public class User {
      * 创建时间
      */
     @Column(value = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     /**
      * 逻辑删除 1被删除;0未被删除
