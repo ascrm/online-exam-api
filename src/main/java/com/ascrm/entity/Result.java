@@ -17,11 +17,11 @@ public class Result<T> {
     private T data;
 
     public static <T> Result<T> success(){
-        return new Result<>(200,null,null);
+        return new Result<>(200,"true",null);
     }
   
-    public static <T> Result<T> success(String msg){
-        return new Result<>(200,msg,null);
+    public static <T> Result<T> success(T data){
+        return new Result<>(200,"true",data);
     }
   
     public static <T> Result<T> success(String msg,T data){

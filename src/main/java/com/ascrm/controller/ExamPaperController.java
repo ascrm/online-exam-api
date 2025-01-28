@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
 
@@ -69,12 +71,24 @@ public class ExamPaperController {
     /**
      * 删除试卷
      */
-    @DeleteMapping("/examPaper/{id}")
-    public Result<String> deleteExamPaper(@PathVariable int id){
+    @DeleteMapping("/examPaper")
+    public Result<String> deleteExamPaper(int id){
         examPaperService.updateChain()
                 .set(EXAM_PAPER.IS_DELETE,true)
                 .where(EXAM_PAPER.ID.eq(id))
                 .update();
         return Result.success();
+    }
+
+    /**
+     * 批量删除试卷
+     */
+    @DeleteMapping("/examPapers")
+    public Result<String> deleteExamPapers(String idsStr){
+       List<String> ids = Arrays.asList(idsStr.split(","));
+       List<ExamPaper> examPapers = examPaperService.getMapper().selectListByIds(ids);
+       examPapers.forEach(examPaper -> examPaper.setIsDelete(1));
+       examPaperService.updateBatch(examPapers);
+       return Result.success();
     }
 }

@@ -1,6 +1,7 @@
 package com.ascrm.service.impl;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.ascrm.service.ExamPaperService;
 import com.ascrm.entity.ExamPaper;
@@ -15,5 +16,4 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
  */
 @Service
 public class ExamPaperServiceImpl extends ServiceImpl<ExamPaperMapper, ExamPaper> implements ExamPaperService {
-
 }

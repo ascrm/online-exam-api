@@ -11,5 +11,4 @@ import com.mybatisflex.core.service.IService;
  * @since 1.0
  */
 public interface ExamPaperService extends IService<ExamPaper> {
-
 }
