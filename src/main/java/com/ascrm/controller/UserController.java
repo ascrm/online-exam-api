@@ -34,7 +34,8 @@ public class UserController {
     @GetMapping("/users")
     private Result<PageResult<UserViewer>> getUsers(@RequestParam("pageNum") int pageNum,
                                               @RequestParam("pageSize") int pageSize){
-        Page<User> page = userService.page(new Page<>(pageNum, pageSize),new QueryWrapper().where(USER.IS_DELETE.eq(0)));
+        Page<User> page = userService.page(new Page<>(pageNum, pageSize),new QueryWrapper()
+                .where(USER.IS_DELETE.eq(0)));
         PageResult<UserViewer> pageResult = new PageResult<>();
         pageResult.setPageSize(pageSize)
                 .setPageNum(pageNum)
