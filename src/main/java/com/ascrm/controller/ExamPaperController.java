@@ -84,11 +84,10 @@ public class ExamPaperController {
      * 批量删除试卷
      */
     @DeleteMapping("/examPapers")
-    public Result<String> deleteExamPapers(String idsStr){
-       List<String> ids = Arrays.asList(idsStr.split(","));
+    public Result<String> deleteExamPapers(String ids){
         examPaperService.updateChain()
                 .set(EXAM_PAPER.IS_DELETE, true)
-                .where(EXAM_PAPER.ID.in(ids))
+                .where(EXAM_PAPER.ID.in(Arrays.asList(ids.split(","))))
                 .update();
        return Result.success();
     }

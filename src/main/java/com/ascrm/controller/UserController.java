@@ -87,11 +87,10 @@ public class UserController {
      * 批量删除用户
      */
     @DeleteMapping("/users")
-    public Result<String> deleteUsers(String idsStr) {
-        List<String> ids = Arrays.asList(idsStr.split(","));
+    public Result<String> deleteUsers(String ids) {
         userService.updateChain()
                 .set(USER.IS_DELETE, true)
-                .where(USER.ID.in(ids))
+                .where(USER.ID.in(Arrays.asList(ids.split(","))))
                 .update();
         return Result.success();
     }

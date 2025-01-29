@@ -14,4 +14,8 @@ import com.mybatisflex.core.service.IService;
 public interface QuestionService extends IService<Question> {
 
     void addQuestion(QuestionDTO questionDTO);
+
+    void deleteQuestion(int id);
+
+    void deleteQuestions(String ids);
 }

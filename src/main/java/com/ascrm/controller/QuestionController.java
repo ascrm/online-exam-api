@@ -10,6 +10,8 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
 /**
@@ -59,10 +61,16 @@ public class QuestionController {
      */
     @DeleteMapping("/question")
     public Result<String> deleteQuestion(int id){
-        questionService.updateChain()
-                .set(QUESTION.IS_DELETED,1)
-                .where(QUESTION.ID.eq(id))
-                .update();
+        questionService.deleteQuestion(id);
+        return Result.success();
+    }
+
+    /**
+     * 批量删除题目
+     */
+    @DeleteMapping("/questions")
+    public Result<String> deleteQuestions(String ids){
+        questionService.deleteQuestions(ids);
         return Result.success();
     }
 }

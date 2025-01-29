@@ -4,8 +4,13 @@ import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.entity.SingleChoiceQuestion;
 import com.ascrm.enums.QuestionTypeEnum;
 import com.ascrm.mapper.SingleChoiceQuestionMapper;
+import com.mybatisflex.core.update.UpdateChain;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+
+import static com.ascrm.entity.table.SingleChoiceQuestionTableDef.SINGLE_CHOICE_QUESTION;
 
 /**
  * @Author: ascrm
@@ -33,5 +38,23 @@ public class SingleQuestionHandler implements QuestionHandler{
                 .setOptionD(questionDTO.getOptionD())
                 .setCreatedBy(questionDTO.getCreatedBy());
         singleChoiceQuestionMapper.insert(singleChoiceQuestion,true);
+    }
+
+    @Override
+    public void deleteQuestion(Integer id) {
+        UpdateChain.of(SingleChoiceQuestion.class)
+                .from(SINGLE_CHOICE_QUESTION)
+                .set(SINGLE_CHOICE_QUESTION.IS_DELETE, true)
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.eq(id))
+                .update();
+    }
+
+    @Override
+    public void deleteQuestions(String ids) {
+        UpdateChain.of(SingleChoiceQuestion.class)
+                .from(SINGLE_CHOICE_QUESTION)
+                .set(SINGLE_CHOICE_QUESTION.IS_DELETE, true)
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
+                .update();
     }
 }
