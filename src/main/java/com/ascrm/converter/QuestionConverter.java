@@ -4,8 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ascrm.entity.Question;
 import com.ascrm.entity.QuestionViewer;
 import org.springframework.stereotype.Component;
-import com.ascrm.enums.questionTypeEnum;
-import com.ascrm.enums.questionDifficutyEnum;
+import com.ascrm.enums.QuestionTypeEnum;
+import com.ascrm.enums.QuestionDifficultyEnum;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ public class QuestionConverter {
         List<QuestionViewer> list=new ArrayList<>();
         questionList.forEach(question -> {
             QuestionViewer questionViewer = BeanUtil.copyProperties(question, QuestionViewer.class);
-            if(questionViewer.getQuestionType()!=null) questionViewer.setQuestionTypeLabel(Objects.requireNonNull(questionTypeEnum.getByCode(questionViewer.getQuestionType())).getLabel());
-            if(questionViewer.getDifficulty()!=null) questionViewer.setDifficultyLabel(Objects.requireNonNull(questionDifficutyEnum.getByCode(questionViewer.getDifficulty())).getLabel());
+            if(questionViewer.getQuestionType()!=null) questionViewer.setQuestionTypeLabel(Objects.requireNonNull(QuestionTypeEnum.getByCode(questionViewer.getQuestionType())).getLabel());
+            if(questionViewer.getDifficulty()!=null) questionViewer.setDifficultyLabel(Objects.requireNonNull(QuestionDifficultyEnum.getByCode(questionViewer.getDifficulty())).getLabel());
             if(question.getCreatedAt()!=null) questionViewer.setCreatedAt(question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             list.add(questionViewer);
         });

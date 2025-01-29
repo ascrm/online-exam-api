@@ -1,5 +1,6 @@
 package com.ascrm.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -77,6 +78,4 @@ public class Question {
 
     @Column(value = "is_deleted")
     private Integer isDeleted;
-
-
 }

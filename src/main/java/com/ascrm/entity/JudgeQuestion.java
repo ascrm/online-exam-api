@@ -32,12 +32,6 @@ public class JudgeQuestion {
     @Column(value = "question_id")
     private Integer questionId;
 
-    @Column(value = "option_T")
-    private String optionT;
-
-    @Column(value = "option_F")
-    private String optionF;
-
     @Column(value = "answer")
     private String answer;
 

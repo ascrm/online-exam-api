@@ -50,20 +50,18 @@ public class SingleChoiceQuestion {
     @Column(value = "answer")
     private String answer;
 
-    @Column(value = "create_by")
-    private String createBy;
+    @Column(value = "created_by")
+    private String createdBy;
 
-    @Column(value = "create_at")
-    private LocalDateTime createAt;
+    @Column(value = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(value = "update_at")
-    private LocalDateTime updateAt;
+    @Column(value = "updated_at")
+    private LocalDateTime updatedAt;
 
     /**
      * 逻辑删除
      */
     @Column(value = "is_delete")
     private Integer isDelete;
-
-
 }

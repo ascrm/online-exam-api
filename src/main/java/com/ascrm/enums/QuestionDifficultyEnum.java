@@ -7,7 +7,7 @@ import lombok.Getter;
  * @Date: 2025/1/29
  */
 @Getter
-public enum questionDifficutyEnum {
+public enum QuestionDifficultyEnum {
     ENTRY(1,"入门"),
     EASY(2,"简单"),
     NORMAL(3,"普通"),
@@ -17,13 +17,13 @@ public enum questionDifficutyEnum {
     private final Integer value;
     private final String label;
 
-    questionDifficutyEnum(Integer value, String label) {
+    QuestionDifficultyEnum(Integer value, String label) {
         this.value = value;
         this.label = label;
     }
 
-    public static questionDifficutyEnum getByCode(Integer val) {
-        for (questionDifficutyEnum item : values()) {
+    public static QuestionDifficultyEnum getByCode(Integer val) {
+        for (QuestionDifficultyEnum item : values()) {
             if (item.value.equals(val)) {
                 return item;
             }

@@ -1,6 +1,7 @@
 package com.ascrm.service;
 
 
+import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.entity.Question;
 import com.mybatisflex.core.service.IService;
 
@@ -12,4 +13,5 @@ import com.mybatisflex.core.service.IService;
  */
 public interface QuestionService extends IService<Question> {
 
+    void addQuestion(QuestionDTO questionDTO);
 }

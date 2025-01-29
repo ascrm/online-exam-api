@@ -2,15 +2,13 @@ package com.ascrm.controller;
 
 import com.ascrm.converter.QuestionConverter;
 import com.ascrm.entity.*;
+import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.entity.QuestionViewer;
 import com.ascrm.service.QuestionService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
@@ -44,6 +42,27 @@ public class QuestionController {
                 .setPageSize(pageSize)
                 .setTotal(page.getTotalRow())
                 .setList(questionConverter.to(page.getRecords()));
-        return Result.success("查询成功",pageResult);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 新增题目
+     */
+    @PostMapping("/question")
+    public Result<String> addQuestion(@RequestBody QuestionDTO questionDTO) {
+        questionService.addQuestion(questionDTO);
+        return Result.success();
+    }
+
+    /**
+     * 删除题目
+     */
+    @DeleteMapping("/question")
+    public Result<String> deleteQuestion(int id){
+        questionService.updateChain()
+                .set(QUESTION.IS_DELETED,1)
+                .where(QUESTION.ID.eq(id))
+                .update();
+        return Result.success();
     }
 }
