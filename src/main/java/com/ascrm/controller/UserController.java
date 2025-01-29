@@ -89,9 +89,27 @@ public class UserController {
     @DeleteMapping("/users")
     public Result<String> deleteUsers(String idsStr) {
         List<String> ids = Arrays.asList(idsStr.split(","));
-        List<User> users = userService.getMapper().selectListByIds(ids);
-        users.forEach(user->user.setIsDelete(1));
-        userService.updateBatch(users);
+        userService.updateChain()
+                .set(USER.IS_DELETE, true)
+                .where(USER.ID.in(ids))
+                .update();
         return Result.success();
+    }
+
+    /**
+     * 条件查询用户
+     */
+    @PostMapping("/users/condition")
+    public Result<List<UserViewer>> getUsersByCondition(@RequestBody User user){
+        List<User> userList = userService.queryChain()
+                .select(USER.ALL_COLUMNS)
+                .from(USER)
+                .where(USER.IS_DELETE.eq(0))
+                .and(USER.USERNAME.eq(user.getUsername()))
+                .and(USER.NICK_NAME.like(user.getNickName()))
+                .and(USER.EMAIL.eq(user.getEmail()))
+                .and(USER.PHONE.eq(user.getPhone()))
+                .list();
+        return Result.success(userConverter.to(userList));
     }
 }

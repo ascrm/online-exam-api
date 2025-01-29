@@ -86,9 +86,25 @@ public class ExamPaperController {
     @DeleteMapping("/examPapers")
     public Result<String> deleteExamPapers(String idsStr){
        List<String> ids = Arrays.asList(idsStr.split(","));
-       List<ExamPaper> examPapers = examPaperService.getMapper().selectListByIds(ids);
-       examPapers.forEach(examPaper -> examPaper.setIsDelete(1));
-       examPaperService.updateBatch(examPapers);
+        examPaperService.updateChain()
+                .set(EXAM_PAPER.IS_DELETE, true)
+                .where(EXAM_PAPER.ID.in(ids))
+                .update();
        return Result.success();
+    }
+
+    /**
+     * 条件查询
+     */
+    @PostMapping("/examPaper/condition")
+    public Result<List<ExamPaperViewer>> getExamPaperByCondition(@RequestBody ExamPaper examPaper){
+        List<ExamPaper> examPaperList = examPaperService.queryChain()
+                .select(EXAM_PAPER.ALL_COLUMNS)
+                .from(EXAM_PAPER)
+                .where(EXAM_PAPER.IS_DELETE.eq(0))
+                .and(EXAM_PAPER.NAME.eq(examPaper.getName()))
+                .and(EXAM_PAPER.IS_PUBLISHED.eq(examPaper.getIsPublished()))
+                .list();
+        return Result.success(examPaperConverter.to(examPaperList));
     }
 }
