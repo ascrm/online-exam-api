@@ -1,11 +1,15 @@
 package com.ascrm.handler;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.entity.JudgeQuestion;
 import com.ascrm.enums.QuestionTypeEnum;
 import com.ascrm.mapper.JudgeQuestionMapper;
+import com.ascrm.viewer.QuestionViewer;
+import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -17,10 +21,10 @@ import static com.ascrm.entity.table.JudgeQuestionTableDef.JUDGE_QUESTION;
  * @Date: 2025/1/29
  */
 @Component
+@RequiredArgsConstructor
 public class JudgeQuestionHandler implements QuestionHandler{
 
-    @Resource
-    private JudgeQuestionMapper judgeQuestionMapper;
+    private final JudgeQuestionMapper judgeQuestionMapper;
 
     @Override
     public QuestionTypeEnum getQuestionTypeEnum() {
@@ -29,11 +33,15 @@ public class JudgeQuestionHandler implements QuestionHandler{
 
     @Override
     public void addQuestion(QuestionDTO questionDTO) {
-        JudgeQuestion judgeQuestion = new JudgeQuestion();
-        judgeQuestion.setQuestionId(questionDTO.getId())
-                .setAnswer(questionDTO.getAnswer())
-                .setCreatedBy(questionDTO.getCreatedBy());
+        JudgeQuestion judgeQuestion = BeanUtil.copyProperties(questionDTO, JudgeQuestion.class);
         judgeQuestionMapper.insert(judgeQuestion,true);
+    }
+
+    @Override
+    public void updateQuestion(QuestionDTO questionDTO) {
+        JudgeQuestion judgeQuestion = BeanUtil.copyProperties(questionDTO, JudgeQuestion.class);
+        judgeQuestionMapper.updateByQuery(judgeQuestion,new QueryWrapper()
+                .where(JUDGE_QUESTION.QUESTION_ID.eq(questionDTO.getId())));
     }
 
     @Override
@@ -52,5 +60,16 @@ public class JudgeQuestionHandler implements QuestionHandler{
                 .set(JUDGE_QUESTION.IS_DELETE, true)
                 .where(JUDGE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
                 .update();
+    }
+
+    @Override
+    public QuestionViewer getQuestionViewerById(QuestionViewer questionViewer) {
+        JudgeQuestion judgeQuestion = QueryChain.of(JudgeQuestion.class)
+                .select(JUDGE_QUESTION.ALL_COLUMNS)
+                .from(JUDGE_QUESTION)
+                .where(JUDGE_QUESTION.QUESTION_ID.eq(questionViewer.getId()))
+                .one();
+        questionViewer.setAnswer(judgeQuestion.getAnswer());
+        return questionViewer;
     }
 }

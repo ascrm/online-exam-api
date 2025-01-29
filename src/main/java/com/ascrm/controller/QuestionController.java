@@ -3,14 +3,12 @@ package com.ascrm.controller;
 import com.ascrm.converter.QuestionConverter;
 import com.ascrm.entity.*;
 import com.ascrm.entity.DTO.QuestionDTO;
-import com.ascrm.entity.QuestionViewer;
 import com.ascrm.service.QuestionService;
+import com.ascrm.viewer.QuestionViewer;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
@@ -34,7 +32,7 @@ public class QuestionController {
      */
     @GetMapping("/questions")
     public Result<PageResult<QuestionViewer>> getExamPaperList(@RequestParam("pageNum") int pageNum,
-                                                                                @RequestParam("pageSize") int pageSize) {
+                                                               @RequestParam("pageSize") int pageSize) {
         Page<Question> page = questionService.page(new Page<>(pageNum, pageSize), new QueryWrapper()
                 .where(QUESTION.IS_DELETED.eq(0))
                 .orderBy(QUESTION.QUESTION_TYPE.asc())
@@ -57,6 +55,15 @@ public class QuestionController {
     }
 
     /**
+     * 修改题目信息
+     */
+    @PutMapping("/question")
+    public Result<String> updateQuestion(@RequestBody QuestionDTO questionDTO){
+        questionService.updateQuestion(questionDTO);
+        return Result.success();
+    }
+
+    /**
      * 删除题目
      */
     @DeleteMapping("/question")
@@ -72,5 +79,13 @@ public class QuestionController {
     public Result<String> deleteQuestions(String ids){
         questionService.deleteQuestions(ids);
         return Result.success();
+    }
+
+    /**
+     * 根据id获取题目详细信息
+     */
+    @GetMapping("/question")
+    public Result<QuestionViewer> getQuestionViewerById(int id){
+        return Result.success(questionService.getQuestionViewerById(id));
     }
 }

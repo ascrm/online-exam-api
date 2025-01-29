@@ -1,11 +1,15 @@
 package com.ascrm.handler;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.entity.SingleChoiceQuestion;
 import com.ascrm.enums.QuestionTypeEnum;
 import com.ascrm.mapper.SingleChoiceQuestionMapper;
+import com.ascrm.viewer.QuestionViewer;
+import com.mybatisflex.core.query.QueryChain;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -17,10 +21,10 @@ import static com.ascrm.entity.table.SingleChoiceQuestionTableDef.SINGLE_CHOICE_
  * @Date: 2025/1/29
  */
 @Component
+@RequiredArgsConstructor
 public class SingleQuestionHandler implements QuestionHandler{
 
-    @Resource
-    private SingleChoiceQuestionMapper singleChoiceQuestionMapper;
+    private final SingleChoiceQuestionMapper singleChoiceQuestionMapper;
 
     @Override
     public QuestionTypeEnum getQuestionTypeEnum() {
@@ -29,15 +33,15 @@ public class SingleQuestionHandler implements QuestionHandler{
 
     @Override
     public void addQuestion(QuestionDTO questionDTO) {
-        SingleChoiceQuestion singleChoiceQuestion = new SingleChoiceQuestion();
-        singleChoiceQuestion.setQuestionId(questionDTO.getId())
-                .setAnswer(questionDTO.getAnswer())
-                .setOptionA(questionDTO.getOptionA())
-                .setOptionB(questionDTO.getOptionB())
-                .setOptionC(questionDTO.getOptionC())
-                .setOptionD(questionDTO.getOptionD())
-                .setCreatedBy(questionDTO.getCreatedBy());
+        SingleChoiceQuestion singleChoiceQuestion = BeanUtil.copyProperties(questionDTO, SingleChoiceQuestion.class);
         singleChoiceQuestionMapper.insert(singleChoiceQuestion,true);
+    }
+
+    @Override
+    public void updateQuestion(QuestionDTO questionDTO) {
+        SingleChoiceQuestion singleChoiceQuestion = BeanUtil.copyProperties(questionDTO, SingleChoiceQuestion.class);
+        singleChoiceQuestionMapper.updateByQuery(singleChoiceQuestion, new QueryWrapper()
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.eq(questionDTO.getId())));
     }
 
     @Override
@@ -56,5 +60,20 @@ public class SingleQuestionHandler implements QuestionHandler{
                 .set(SINGLE_CHOICE_QUESTION.IS_DELETE, true)
                 .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
                 .update();
+    }
+
+    @Override
+    public QuestionViewer getQuestionViewerById(QuestionViewer questionViewer) {
+        SingleChoiceQuestion singleChoiceQuestion = QueryChain.of(SingleChoiceQuestion.class)
+                .select(SINGLE_CHOICE_QUESTION.ALL_COLUMNS)
+                .from(SINGLE_CHOICE_QUESTION)
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.eq(questionViewer.getId()))
+                .one();
+        questionViewer.setOptionA(singleChoiceQuestion.getOptionA())
+                .setOptionB(singleChoiceQuestion.getOptionB())
+                .setOptionC(singleChoiceQuestion.getOptionC())
+                .setOptionD(singleChoiceQuestion.getOptionD())
+                .setAnswer(singleChoiceQuestion.getAnswer());
+        return questionViewer;
     }
 }

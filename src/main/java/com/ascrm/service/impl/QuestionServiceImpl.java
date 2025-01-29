@@ -2,11 +2,13 @@ package com.ascrm.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ascrm.converter.QuestionConverter;
 import com.ascrm.entity.DTO.QuestionDTO;
 import com.ascrm.enums.QuestionTypeEnum;
 import com.ascrm.handler.QuestionHandler;
 import com.ascrm.handler.QuestionHandlerFactory;
 import com.ascrm.utils.UserHolder;
+import com.ascrm.viewer.QuestionViewer;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
@@ -36,6 +37,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     private final QuestionHandlerFactory questionHandlerFactory;
 
+    private final QuestionConverter questionConverter;
+
     @Override
     @Transactional
     public void addQuestion(QuestionDTO questionDTO) {
@@ -45,6 +48,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         questionDTO.setId(question.getId());
         QuestionHandler handler = questionHandlerFactory.getHandler(questionDTO.getQuestionType());
         handler.addQuestion(questionDTO);
+    }
+
+    @Override
+    @Transactional
+    public void updateQuestion(QuestionDTO questionDTO) {
+        Question question = BeanUtil.copyProperties(questionDTO, Question.class);
+        questionMapper.update(question);
+        QuestionHandler handler = questionHandlerFactory.getHandler(questionDTO.getQuestionType());
+        handler.updateQuestion(questionDTO);
     }
 
     @Override
@@ -78,5 +90,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                 handler.deleteQuestions(String.join(",",list));
             }
         }
+    }
+
+    @Override
+    public QuestionViewer getQuestionViewerById(int id) {
+        QuestionViewer questionViewer = questionConverter.to(getById(id));
+        QuestionHandler handler = questionHandlerFactory.getHandler(questionViewer.getQuestionType());
+        return handler.getQuestionViewerById(questionViewer);
     }
 }

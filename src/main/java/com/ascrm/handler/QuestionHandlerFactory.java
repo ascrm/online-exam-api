@@ -5,7 +5,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import com.ascrm.enums.QuestionTypeEnum;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class QuestionHandlerFactory implements InitializingBean {
 
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet(){
         for (QuestionHandler handler : questionHandlerList) {
             map.put(handler.getQuestionTypeEnum(),handler);
         }

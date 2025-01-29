@@ -30,6 +30,7 @@ public class QuestionDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer isDeleted;
+
     private String optionA;
     private String optionB;
     private String optionC;
