@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import com.ascrm.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.ascrm.entity.table.UserTableDef.USER;
 
 
@@ -27,7 +30,7 @@ public class AuthController {
      * 用户登录
      */
     @PostMapping("/login")
-    public Result<String> login(@RequestBody User user) {
+    public Result<Map<String,Object>> login(@RequestBody User user) {
         User userResult = userService.queryChain()
                 .select(USER.ALL_COLUMNS)
                 .from(USER)
@@ -38,7 +41,11 @@ public class AuthController {
             return Result.fail("账号或密码错误");
         }
         StpUtil.login(user.getUsername());
-        return Result.success("登录成功", StpUtil.getTokenInfo().getTokenValue()+";"+userResult.getRole());
+        String token = StpUtil.getTokenInfo().getTokenValue() + ";" + userResult.getRole();
+        Map<String, Object> map=new HashMap<>();
+        map.put("token",token);
+        map.put("user",userResult.getNickName()==null?userResult.getUsername():userResult.getNickName());
+        return Result.success(map);
     }
 
     /**
@@ -47,6 +54,6 @@ public class AuthController {
     @PostMapping("/logout")
     public Result<String> logout(){
         StpUtil.logout();
-        return Result.success("退出登录成功");
+        return Result.success();
     }
 }
