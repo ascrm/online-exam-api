@@ -82,12 +82,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                 .list();
 
         for (QuestionTypeEnum questionTypeEnum : QuestionTypeEnum.values()) {
-            List<String> list = questionList.stream().filter(question ->
+            List<Integer> idList = questionList.stream().filter(question ->
                     questionTypeEnum.getValue().equals(question.getQuestionType())
-            ).map(Question::getId).map(String::valueOf).toList();
-            if(!CollectionUtils.isEmpty(list)){
+            ).map(Question::getId).toList();
+            if(!CollectionUtils.isEmpty(idList)){
                 QuestionHandler handler = questionHandlerFactory.getHandler(questionTypeEnum.getValue());
-                handler.deleteQuestions(String.join(",",list));
+                handler.deleteQuestions(idList);
             }
         }
     }

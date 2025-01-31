@@ -31,9 +31,6 @@ public class Question {
     @Id(keyType = KeyType.Auto)
     private Integer id;
 
-    @Column(value = "exam_paper_id")
-    private Integer examPaperId;
-
     @Column(value="name")
     private String name;
 

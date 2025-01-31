@@ -30,6 +30,7 @@ public class QuestionConverter {
         if(questionViewer.getQuestionType()!=null) questionViewer.setQuestionTypeLabel(Objects.requireNonNull(QuestionTypeEnum.getByCode(questionViewer.getQuestionType())).getLabel());
         if(questionViewer.getDifficulty()!=null) questionViewer.setDifficultyLabel(Objects.requireNonNull(QuestionDifficultyEnum.getByCode(Integer.valueOf(questionViewer.getDifficulty()))).getLabel());
         if(question.getCreatedAt()!=null) questionViewer.setCreatedAt(question.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        if(question.getUpdatedAt()!=null) questionViewer.setUpdatedAt(question.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return questionViewer;
     }
 }

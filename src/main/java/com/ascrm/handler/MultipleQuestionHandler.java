@@ -12,7 +12,8 @@ import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ascrm.entity.table.MultipleChoiceQuestionTableDef.MULTIPLE_CHOICE_QUESTION;
 
@@ -54,11 +55,11 @@ public class MultipleQuestionHandler implements QuestionHandler{
     }
 
     @Override
-    public void deleteQuestions(String ids) {
+    public void deleteQuestions(List<Integer> ids) {
         UpdateChain.of(MultipleChoiceQuestion.class)
                 .from(MULTIPLE_CHOICE_QUESTION)
                 .set(MULTIPLE_CHOICE_QUESTION.IS_DELETE, true)
-                .where(MULTIPLE_CHOICE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
+                .where(MULTIPLE_CHOICE_QUESTION.QUESTION_ID.in(ids))
                 .update();
     }
 
@@ -75,5 +76,17 @@ public class MultipleQuestionHandler implements QuestionHandler{
                 .setOptionD(multipleChoiceQuestion.getOptionD())
                 .setAnswer(multipleChoiceQuestion.getAnswer());
         return questionViewer;
+    }
+
+    @Override
+    public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
+        List<QuestionViewer> list = new ArrayList<>();
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = multipleChoiceQuestionMapper.selectListByQuery(new QueryWrapper()
+                .where(MULTIPLE_CHOICE_QUESTION.QUESTION_ID.in(ids)));
+        multipleChoiceQuestions.forEach(multipleChoiceQuestion -> {
+            QuestionViewer questionViewer = BeanUtil.copyProperties(multipleChoiceQuestion, QuestionViewer.class);
+            list.add(questionViewer);
+        });
+        return list;
     }
 }

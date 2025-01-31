@@ -12,7 +12,8 @@ import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ascrm.entity.table.JudgeQuestionTableDef.JUDGE_QUESTION;
 
@@ -54,11 +55,11 @@ public class JudgeQuestionHandler implements QuestionHandler{
     }
 
     @Override
-    public void deleteQuestions(String ids) {
+    public void deleteQuestions(List<Integer> ids) {
         UpdateChain.of(JudgeQuestion.class)
                 .from(JUDGE_QUESTION)
                 .set(JUDGE_QUESTION.IS_DELETE, true)
-                .where(JUDGE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
+                .where(JUDGE_QUESTION.QUESTION_ID.in(ids))
                 .update();
     }
 
@@ -71,5 +72,17 @@ public class JudgeQuestionHandler implements QuestionHandler{
                 .one();
         questionViewer.setAnswer(judgeQuestion.getAnswer());
         return questionViewer;
+    }
+
+    @Override
+    public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
+        List<QuestionViewer> list = new ArrayList<>();
+        List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.selectListByQuery(new QueryWrapper()
+                .where(JUDGE_QUESTION.QUESTION_ID.in(ids)));
+        judgeQuestions.forEach(judgeQuestion -> {
+            QuestionViewer questionViewer = BeanUtil.copyProperties(judgeQuestion, QuestionViewer.class);
+            list.add(questionViewer);
+        });
+        return list;
     }
 }

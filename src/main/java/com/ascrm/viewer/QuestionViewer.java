@@ -22,7 +22,6 @@ import java.lang.Integer;
 public class QuestionViewer {
 
     private Integer id;
-    private Integer examPaperId;
     private String name;
     private Integer questionType;
     private String questionTypeLabel;

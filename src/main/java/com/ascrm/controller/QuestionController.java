@@ -10,6 +10,8 @@ import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
 /**
@@ -82,7 +84,26 @@ public class QuestionController {
     }
 
     /**
-     * 根据id获取题目详细信息
+     * 根据条件获取题目列表
+     */
+    @PostMapping("/questions/condition")
+    public Result<List<QuestionViewer>> getQuestionsByCondition(@RequestBody Question question){
+        if(question.getQuestionType()==null){
+            return Result.success(questionConverter.to(questionService.list()));
+        }
+        List<Question> list = questionService.queryChain()
+                .select(QUESTION.ALL_COLUMNS)
+                .from(QUESTION)
+                .where(QUESTION.IS_DELETED.eq(0))
+                .and(QUESTION.NAME.eq(question.getName()))
+                .and(QUESTION.QUESTION_TYPE.eq(question.getQuestionType()))
+                .and(QUESTION.DIFFICULTY.eq(question.getDifficulty()))
+                .list();
+        return Result.success(questionConverter.to(list));
+    }
+
+    /**
+     * 根据题目id获取题目详细信息
      */
     @GetMapping("/question")
     public Result<QuestionViewer> getQuestionViewerById(int id){

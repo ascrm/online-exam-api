@@ -12,7 +12,8 @@ import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.ascrm.entity.table.SingleChoiceQuestionTableDef.SINGLE_CHOICE_QUESTION;
 
@@ -54,11 +55,11 @@ public class SingleQuestionHandler implements QuestionHandler{
     }
 
     @Override
-    public void deleteQuestions(String ids) {
+    public void deleteQuestions(List<Integer> ids) {
         UpdateChain.of(SingleChoiceQuestion.class)
                 .from(SINGLE_CHOICE_QUESTION)
                 .set(SINGLE_CHOICE_QUESTION.IS_DELETE, true)
-                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(Arrays.asList(ids.split(","))))
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(ids))
                 .update();
     }
 
@@ -75,5 +76,17 @@ public class SingleQuestionHandler implements QuestionHandler{
                 .setOptionD(singleChoiceQuestion.getOptionD())
                 .setAnswer(singleChoiceQuestion.getAnswer());
         return questionViewer;
+    }
+
+    @Override
+    public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
+        List<QuestionViewer> list = new ArrayList<>();
+        List<SingleChoiceQuestion> singleChoiceQuestions = singleChoiceQuestionMapper.selectListByQuery(new QueryWrapper()
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(ids)));
+        for (SingleChoiceQuestion singleChoiceQuestion : singleChoiceQuestions) {
+            QuestionViewer questionViewer = BeanUtil.copyProperties(singleChoiceQuestion, QuestionViewer.class);
+            list.add(questionViewer);
+        }
+        return list;
     }
 }
