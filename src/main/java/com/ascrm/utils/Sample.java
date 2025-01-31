@@ -14,10 +14,9 @@ import darabonba.core.client.ClientOverrideConfiguration;
 public class Sample {
 
     public static void sendSms(SmsEntity smsEntity) {
-
         StaticCredentialProvider provider = StaticCredentialProvider.create(Credential.builder()
-                .accessKeyId(System.getenv("LTAI5tLz3CDGFJ3R2Ugmrexu"))
-                .accessKeySecret(System.getenv("aBPz5ziwDuYZIOTKq4AmVA8XfZEPMY"))
+                .accessKeyId(System.getenv(smsEntity.getAccessKey()))
+                .accessKeySecret(System.getenv(smsEntity.getSecretKey()))
                 .build());
 
         AsyncClient client = AsyncClient.builder()

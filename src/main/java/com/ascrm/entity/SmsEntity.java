@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @Author: ascrm
@@ -18,4 +19,10 @@ public class SmsEntity {
     private String signName;
     private String templateCode;
     private String templateParam;
+
+    @Value("${sms.access-key}")
+    private String accessKey;
+
+    @Value("${sms.secret-key}")
+    private String secretKey;
 }
