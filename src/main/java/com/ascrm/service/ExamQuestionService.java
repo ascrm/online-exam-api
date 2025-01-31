@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface ExamQuestionService extends IService<ExamQuestion> {
 
-    List<QuestionViewer> getQuestionViewerByExamPaperId(int examPaperId);
+    List<QuestionViewer> getQuestionViewerByExamPaperIdAndQuestionType(int examPaperId,int questionType);
 }

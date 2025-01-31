@@ -26,7 +26,7 @@ public class ExamQuestionController {
     /**
      * 导入题目
      */
-    @PostMapping("exam/question")
+    @PostMapping("/exam/question")
     public Result<String> importQuestion(@RequestBody QuestionDTO questionDTO) {
         ExamQuestion examQuestion = new ExamQuestion();
         examQuestion.setQuestionId(questionDTO.getId())
@@ -36,11 +36,11 @@ public class ExamQuestionController {
     }
 
     /**
-     * 根据试卷id获取该试卷的题目信息（包括详细信息）
+     * 根据试卷id和题目分类
+     * 获取当前试卷下某个类别的所有的题目信息（包括详细信息）
      */
     @GetMapping("/exam/question")
-    public Result<List<QuestionViewer>> getQuestionViewerByExamPaperId(int examPaperId) {
-        examQuestionService.getQuestionViewerByExamPaperId(examPaperId);
-        return Result.success();
+    public Result<List<QuestionViewer>> getQuestionViewerByExamPaperIdAndQuestionType(int examPaperId,int questionType) {
+        return Result.success(examQuestionService.getQuestionViewerByExamPaperIdAndQuestionType(examPaperId,questionType));
     }
 }
