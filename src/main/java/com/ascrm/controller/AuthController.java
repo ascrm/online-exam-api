@@ -3,6 +3,7 @@ package com.ascrm.controller;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.ascrm.converter.UserConverter;
 import com.ascrm.entity.Result;
 import com.ascrm.entity.SmsEntity;
 import com.ascrm.entity.User;
@@ -36,6 +37,8 @@ public class AuthController {
 
     private final UserService userService;
 
+    private final UserConverter userConverter;
+
     //创建本地缓存
     public static Cache<String,String> cache=Caffeine.newBuilder()
             .initialCapacity(10)//初始容量
@@ -61,7 +64,7 @@ public class AuthController {
         String token = StpUtil.getTokenInfo().getTokenValue();
         Map<String, Object> map=new HashMap<>();
         map.put("token",token);
-        map.put("userInfo",userResult);
+        map.put("userInfo",userConverter.to(userResult));
         return Result.success(map);
     }
 
