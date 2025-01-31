@@ -5,10 +5,13 @@ import com.ascrm.entity.ExamQuestion;
 import com.ascrm.entity.Result;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.viewer.QuestionViewer;
+import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 
 /**
  * 控制层。
@@ -29,6 +32,13 @@ public class ExamQuestionController {
     @PostMapping("/exam/question")
     public Result<String> importQuestion(@RequestBody QuestionDTO questionDTO) {
         ExamQuestion examQuestion = new ExamQuestion();
+
+        ExamQuestion examQuestionResult = examQuestionService.getOne(new QueryWrapper().
+                where(EXAM_QUESTION.EXAM_PAPER_ID.eq(questionDTO.getExamPaperId()))
+                .and(EXAM_QUESTION.QUESTION_ID.eq(questionDTO.getId())));
+
+        if(examQuestionResult!=null) return Result.fail("不能重复导入");
+        
         examQuestion.setQuestionId(questionDTO.getId())
                 .setExamPaperId(questionDTO.getExamPaperId());
         examQuestionService.save(examQuestion);
