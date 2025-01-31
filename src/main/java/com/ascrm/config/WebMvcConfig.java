@@ -32,7 +32,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(webMvcInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/online/exam/login");
+                .excludePathPatterns("/online/exam/login")
+                .excludePathPatterns("/online/exam/logout");
     }
 
     @Override
