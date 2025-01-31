@@ -30,7 +30,7 @@ public class WebMvcInterceptor implements HandlerInterceptor {
           return false;
       }
 
-      if(token.equals(StpUtil.getTokenValue())){
+      if(!token.equals(StpUtil.getTokenValue())){
           String msg = JSON.toJSONString(new Result<>(HttpStatus.HTTP_UNAUTHORIZED,"登录失效，没有访问权限",null));
           response.setStatus(HttpStatus.HTTP_UNAUTHORIZED);
           response.getWriter().write(msg);

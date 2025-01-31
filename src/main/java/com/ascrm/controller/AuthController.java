@@ -12,6 +12,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.RequiredArgsConstructor;
 import com.ascrm.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import static com.ascrm.entity.table.UserTableDef.USER;
 @RestController
 @RequestMapping("/online/exam")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final UserService userService;
@@ -56,10 +58,10 @@ public class AuthController {
             return Result.fail("账号或密码错误");
         }
         StpUtil.login(user.getUsername());
-        String token = StpUtil.getTokenInfo().getTokenValue() + ";" + userResult.getRole();
+        String token = StpUtil.getTokenInfo().getTokenValue();
         Map<String, Object> map=new HashMap<>();
         map.put("token",token);
-        map.put("user",userResult.getNickName()==null?userResult.getUsername():userResult.getNickName());
+        map.put("userInfo",userResult);
         return Result.success(map);
     }
 
@@ -77,9 +79,7 @@ public class AuthController {
      */
     @GetMapping("/code")
     public Result<String> sendSms(String phoneNumber){
-
         String code = RandomUtil.randomNumbers(6);
-
         SmsEntity smsEntity = new SmsEntity();
         smsEntity.setSignName("")
                 .setPhoneNumber(phoneNumber)
