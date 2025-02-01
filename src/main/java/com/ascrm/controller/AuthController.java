@@ -11,6 +11,7 @@ import com.ascrm.utils.Sample;
 import com.ascrm.utils.UserHolder;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
 import com.ascrm.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,18 @@ public class AuthController {
         map.put("token",token);
         map.put("userInfo",userConverter.to(userResult));
         return Result.success(map);
+    }
+
+    /**
+     * 用户注册
+     */
+    @PostMapping("/register")
+    public Result<String> register(@RequestBody User user){
+        User userResult = userService.getOne(new QueryWrapper().where(USER.USERNAME.eq(user.getUsername())));
+        if(userResult!=null) return Result.fail("账号已存在");
+        user.setRole(2);
+        userService.save(user);
+         return Result.success("注册成功");
     }
 
     /**
