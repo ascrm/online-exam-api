@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
 import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 
 /**
@@ -37,7 +36,8 @@ public class ExamQuestionController {
 
         ExamQuestion examQuestionResult = examQuestionService.getOne(new QueryWrapper().
                 where(EXAM_QUESTION.EXAM_PAPER_ID.eq(questionDTO.getExamPaperId()))
-                .and(EXAM_QUESTION.QUESTION_ID.eq(questionDTO.getId())));
+                .and(EXAM_QUESTION.QUESTION_ID.eq(questionDTO.getId()))
+                .and(EXAM_QUESTION.IS_DELETE.eq(0)));
 
         if(examQuestionResult!=null) return Result.fail("不能重复导入");
         
