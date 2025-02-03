@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 判断题表 控制层。
+ * 控制层。
  *
  * @author ascrm
  * @since 1.0
@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/online/exam")
 @RequiredArgsConstructor
-public class JudgeQuestionController {
+public class HistoryExamController {
 }

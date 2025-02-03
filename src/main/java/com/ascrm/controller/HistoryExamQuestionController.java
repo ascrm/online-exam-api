@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/online/exam")
 @RequiredArgsConstructor
-public class SingleChoiceQuestionController {
+public class HistoryExamQuestionController {
 }
