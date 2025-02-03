@@ -82,9 +82,11 @@ public class MultipleQuestionHandler implements QuestionHandler{
     public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
         List<QuestionViewer> list = new ArrayList<>();
         List<MultipleChoiceQuestion> multipleChoiceQuestions = multipleChoiceQuestionMapper.selectListByQuery(new QueryWrapper()
-                .where(MULTIPLE_CHOICE_QUESTION.QUESTION_ID.in(ids)));
+                .where(MULTIPLE_CHOICE_QUESTION.QUESTION_ID.in(ids))
+                .and(MULTIPLE_CHOICE_QUESTION.IS_DELETE.eq(0)));
         multipleChoiceQuestions.forEach(multipleChoiceQuestion -> {
             QuestionViewer questionViewer = BeanUtil.copyProperties(multipleChoiceQuestion, QuestionViewer.class);
+            questionViewer.setId(multipleChoiceQuestion.getQuestionId());
             list.add(questionViewer);
         });
         return list;

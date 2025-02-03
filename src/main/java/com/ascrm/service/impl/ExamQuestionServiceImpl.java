@@ -18,6 +18,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 
 import java.util.List;
 
+import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
 import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 import static com.ascrm.entity.table.QuestionTableDef.QUESTION;
 
@@ -40,7 +41,8 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
         //获取关联表信息
         List<ExamQuestion> examQuestionList = list(new QueryWrapper().select(EXAM_QUESTION.ALL_COLUMNS)
                 .from(EXAM_QUESTION)
-                .where(EXAM_QUESTION.EXAM_PAPER_ID.eq(examPaperId)));
+                .where(EXAM_QUESTION.EXAM_PAPER_ID.eq(examPaperId)
+                .and(EXAM_QUESTION.IS_DELETE.eq(0))));
         if(CollectionUtils.isEmpty(examQuestionList)) return null;
         //从关联表中获取关联的题目ids
         List<Integer> questionIds = examQuestionList.stream().map(ExamQuestion::getQuestionId).toList();

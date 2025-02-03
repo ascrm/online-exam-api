@@ -68,7 +68,8 @@ public class JudgeQuestionHandler implements QuestionHandler{
         JudgeQuestion judgeQuestion = QueryChain.of(JudgeQuestion.class)
                 .select(JUDGE_QUESTION.ALL_COLUMNS)
                 .from(JUDGE_QUESTION)
-                .where(JUDGE_QUESTION.QUESTION_ID.eq(questionViewer.getId()))
+                .where(JUDGE_QUESTION.QUESTION_ID.eq(questionViewer.getId())
+                .and(JUDGE_QUESTION.IS_DELETE.eq(0)))
                 .one();
         questionViewer.setAnswer(judgeQuestion.getAnswer());
         return questionViewer;
@@ -81,6 +82,7 @@ public class JudgeQuestionHandler implements QuestionHandler{
                 .where(JUDGE_QUESTION.QUESTION_ID.in(ids)));
         judgeQuestions.forEach(judgeQuestion -> {
             QuestionViewer questionViewer = BeanUtil.copyProperties(judgeQuestion, QuestionViewer.class);
+            questionViewer.setId(judgeQuestion.getQuestionId());
             list.add(questionViewer);
         });
         return list;

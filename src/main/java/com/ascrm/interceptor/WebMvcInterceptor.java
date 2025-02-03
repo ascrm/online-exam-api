@@ -39,5 +39,4 @@ public class WebMvcInterceptor implements HandlerInterceptor {
       UserHolder.set("username",StpUtil.getLoginId());
       return true;
     }
-
 }

@@ -82,11 +82,13 @@ public class SingleQuestionHandler implements QuestionHandler{
     public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
         List<QuestionViewer> list = new ArrayList<>();
         List<SingleChoiceQuestion> singleChoiceQuestions = singleChoiceQuestionMapper.selectListByQuery(new QueryWrapper()
-                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(ids)));
-        for (SingleChoiceQuestion singleChoiceQuestion : singleChoiceQuestions) {
+                .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(ids))
+                .and(SINGLE_CHOICE_QUESTION.IS_DELETE.eq(0)));
+        singleChoiceQuestions.forEach(singleChoiceQuestion -> {
             QuestionViewer questionViewer = BeanUtil.copyProperties(singleChoiceQuestion, QuestionViewer.class);
+            questionViewer.setId(singleChoiceQuestion.getQuestionId());
             list.add(questionViewer);
-        }
+        });
         return list;
     }
 }

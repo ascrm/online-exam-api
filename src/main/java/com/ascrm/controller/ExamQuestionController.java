@@ -6,11 +6,13 @@ import com.ascrm.entity.Result;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.viewer.QuestionViewer;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
 import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 
 /**
@@ -52,5 +54,19 @@ public class ExamQuestionController {
     @GetMapping("/exam/question")
     public Result<List<QuestionViewer>> getQuestionViewerByExamPaperIdAndQuestionType(int examPaperId,int questionType) {
         return Result.success(examQuestionService.getQuestionViewerByExamPaperIdAndQuestionType(examPaperId,questionType));
+    }
+
+    /**
+     * 删除添加的题目
+     */
+    @DeleteMapping("/exam/question")
+    public Result<String> deleteExamQuestionByExamPaperIdAndQuestionId(int examPaperId,int questionId){
+        UpdateChain.of(ExamQuestion.class)
+                .from(EXAM_QUESTION)
+                .set(EXAM_QUESTION.IS_DELETE, true)
+                .where(EXAM_QUESTION.EXAM_PAPER_ID.eq(examPaperId))
+                .and(EXAM_QUESTION.QUESTION_ID.eq(questionId))
+                .update();
+        return Result.success();
     }
 }
