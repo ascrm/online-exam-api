@@ -11,6 +11,7 @@ import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamQuestionService;
 import com.ascrm.service.HistoryExamService;
 import com.ascrm.utils.UserHolder;
+import com.ascrm.viewer.HistoryExamViewer;
 import com.ascrm.viewer.QuestionViewer;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
@@ -106,12 +107,7 @@ public class HistoryExamController {
      * 查询所有历史记录
      */
     @GetMapping("/historyExamQuestions")
-    public Result<List<HistoryExamQuestion>> getHistoryExamQuestionList(Integer examPaperId) {
-        HistoryExam historyExam = historyExamService.getOne(new QueryWrapper().where(HISTORY_EXAM.IS_DELETE.eq(0))
-                .and(HISTORY_EXAM.EXAM_PAPER_ID.eq(examPaperId))
-                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername())));
-        List<HistoryExamQuestion> historyExamQuestionList = historyExamQuestionService.list(new QueryWrapper().where(HISTORY_EXAM_QUESTION.IS_DELETE.eq(0))
-                .and(HISTORY_EXAM_QUESTION.HISTORY_EXAM_ID.eq(historyExam.getId())));
-        return Result.success(historyExamQuestionList);
+    public Result<List<HistoryExamViewer>> getHistoryExamQuestionList(Integer examPaperId) {
+        return Result.success(historyExamService.getHistoryExamQuestionList(examPaperId));
     }
 }
