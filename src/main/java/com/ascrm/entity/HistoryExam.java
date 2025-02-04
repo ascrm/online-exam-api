@@ -1,5 +1,7 @@
 package com.ascrm.entity;
 
+import com.mybatisflex.annotation.Id;
+import com.mybatisflex.annotation.KeyType;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -19,14 +21,14 @@ import java.lang.Integer;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(value = "tb_histoty_exam")
+@Table(value = "tb_history_exam")
 public class HistoryExam {
 
-    @Column(value = "id")
+    @Id(keyType = KeyType.Auto)
     private Integer id;
 
-    @Column(value = "user_id")
-    private Integer userId;
+    @Column(value = "username")
+    private String username;
 
     @Column(value = "exam_paper_id")
     private Integer examPaperId;
