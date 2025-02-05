@@ -129,6 +129,7 @@ public class ExamPaperController {
                 .and(HISTORY_EXAM.IS_DELETE.eq(0))
                 .list();
         List<Integer> ids = historyExamList.stream().map(HistoryExam::getExamPaperId).toList();
+        if(CollectionUtils.isEmpty(ids)) ids= List.of(0);
         List<ExamPaper> examPaperList = examPaperService.queryChain()
                 .select(EXAM_PAPER.ALL_COLUMNS)
                 .from(EXAM_PAPER)
