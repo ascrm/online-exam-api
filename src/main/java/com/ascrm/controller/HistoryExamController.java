@@ -6,15 +6,12 @@ import com.ascrm.entity.ExamQuestion;
 import com.ascrm.entity.HistoryExam;
 import com.ascrm.entity.HistoryExamQuestion;
 import com.ascrm.entity.Result;
-import com.ascrm.handler.QuestionHandler;
-import com.ascrm.handler.QuestionHandlerFactory;
 import com.ascrm.mapper.HistoryExamQuestionMapper;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamQuestionService;
 import com.ascrm.service.HistoryExamService;
 import com.ascrm.utils.UserHolder;
 import com.ascrm.viewer.HistoryExamViewer;
-import com.ascrm.viewer.QuestionViewer;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.row.Db;
 import lombok.RequiredArgsConstructor;
@@ -88,10 +85,11 @@ public class HistoryExamController {
             else historyExamQuestion.setCorrect(0);
             list.add(historyExamQuestion);
         }
-        Db.executeBatch(list,100, HistoryExamQuestionMapper.class,(mapper,item)->{
+        Db.executeBatch(list,100, HistoryExamQuestionMapper.class,(mapper,item)->
             mapper.updateByQuery(item,new QueryWrapper().where(HISTORY_EXAM_QUESTION.QUESTION_ID.eq(item.getQuestionId())
-                    .and(HISTORY_EXAM_QUESTION.HISTORY_EXAM_ID.eq(item.getHistoryExamId()))));
-        });
+                    .and(HISTORY_EXAM_QUESTION.HISTORY_EXAM_ID.eq(item.getHistoryExamId()))))
+        );
+
         historyExamService.updateChain().set(HISTORY_EXAM.TOTAL_SCORE,totalScore)
                 .where(HISTORY_EXAM.EXAM_PAPER_ID.eq(historyExamQuestionDTOList.getFirst().getExamPaperId()))
                 .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername()))
