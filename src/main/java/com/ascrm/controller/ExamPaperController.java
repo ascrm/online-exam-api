@@ -1,17 +1,17 @@
 package com.ascrm.controller;
 
 import com.ascrm.converter.ExamPaperConverter;
-import com.ascrm.entity.ExamPaper;
-import com.ascrm.entity.HistoryExam;
-import com.ascrm.entity.PageResult;
-import com.ascrm.entity.Result;
+import com.ascrm.entity.*;
 import com.ascrm.service.ExamPaperService;
+import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamService;
+import com.ascrm.service.impl.ExamQuestionServiceImpl;
 import com.ascrm.utils.UserHolder;
 import com.ascrm.viewer.ExamPaperViewer;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
+import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 import static com.ascrm.entity.table.HistoryExamTableDef.HISTORY_EXAM;
 
 /**
@@ -37,6 +38,8 @@ public class ExamPaperController {
     private final ExamPaperConverter examPaperConverter;
 
     private final HistoryExamService historyExamService;
+
+    private final ExamQuestionService examQuestionService;
 
     /**
      * 分页查询试卷列表
@@ -70,6 +73,8 @@ public class ExamPaperController {
     @PutMapping("/examPaper")
     public Result<String> updateExamPaper(@RequestBody ExamPaper examPaper){
         examPaper.setUpdatedAt(LocalDateTime.now());
+        List<ExamQuestion> list = examQuestionService.list(new QueryWrapper().where(EXAM_QUESTION.EXAM_PAPER_ID.eq(examPaper.getId())));
+        if(CollectionUtils.isEmpty(list) && examPaper.getIsPublished()==1) return Result.fail("无法发布白卷");
         examPaperService.updateById(examPaper);
         return Result.success();
     }
