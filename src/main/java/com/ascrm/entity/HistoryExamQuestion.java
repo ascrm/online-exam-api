@@ -45,6 +45,4 @@ public class HistoryExamQuestion {
 
     @Column(value = "is_delete")
     private Integer isDelete;
-
-
 }

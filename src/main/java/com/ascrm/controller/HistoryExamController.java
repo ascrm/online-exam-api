@@ -1,5 +1,6 @@
 package com.ascrm.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.ascrm.entity.DTO.HistoryExamQuestionDTO;
 import com.ascrm.entity.ExamQuestion;
 import com.ascrm.entity.HistoryExam;
@@ -7,6 +8,7 @@ import com.ascrm.entity.HistoryExamQuestion;
 import com.ascrm.entity.Result;
 import com.ascrm.handler.QuestionHandler;
 import com.ascrm.handler.QuestionHandlerFactory;
+import com.ascrm.mapper.HistoryExamQuestionMapper;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamQuestionService;
 import com.ascrm.service.HistoryExamService;
@@ -14,10 +16,13 @@ import com.ascrm.utils.UserHolder;
 import com.ascrm.viewer.HistoryExamViewer;
 import com.ascrm.viewer.QuestionViewer;
 import com.mybatisflex.core.query.QueryWrapper;
+import com.mybatisflex.core.row.Db;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
@@ -40,8 +45,6 @@ public class HistoryExamController {
     private final ExamQuestionService examQuestionService;
 
     private final HistoryExamQuestionService historyExamQuestionService;
-
-    private final QuestionHandlerFactory questionHandlerFactory;
 
     /**
      * 创建历史记录
@@ -72,19 +75,26 @@ public class HistoryExamController {
      * 提交答案
      */
     @PostMapping("/historyExamQuestion")
-    public Result<String> updateHistoryExamQuestion(@RequestBody HistoryExamQuestionDTO historyExamQuestionDTO) {
-        QuestionHandler handler = questionHandlerFactory.getHandler(historyExamQuestionDTO.getQuestionType());
-        QuestionViewer questionViewer = handler.getQuestionViewerById(new QuestionViewer().setId(historyExamQuestionDTO.getQuestionId()));
+    public Result<String> updateHistoryExamQuestion(@RequestBody List<HistoryExamQuestionDTO> historyExamQuestionDTOList) {
+        List<HistoryExamQuestion> list=new ArrayList<>();
+        BigDecimal totalScore= BigDecimal.ZERO;
 
-        HistoryExam historyExam = historyExamService.getOne(new QueryWrapper().where(HISTORY_EXAM.IS_DELETE.eq(0))
-                .and(HISTORY_EXAM.EXAM_PAPER_ID.eq(historyExamQuestionDTO.getExamPaperId()))
-                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername())));
-
-        historyExamQuestionService.updateChain()
-                .where(HISTORY_EXAM_QUESTION.HISTORY_EXAM_ID.eq(historyExam.getId()))
-                .and(HISTORY_EXAM_QUESTION.QUESTION_ID.eq(historyExamQuestionDTO.getQuestionId()))
-                .set(HISTORY_EXAM_QUESTION.ANSWER, historyExamQuestionDTO.getAnswer())
-                .set(HISTORY_EXAM_QUESTION.CORRECT, questionViewer.getAnswer().equals(historyExamQuestionDTO.getAnswer()) ? 1 : 0)
+        for (HistoryExamQuestionDTO historyExamQuestionDTO : historyExamQuestionDTOList) {
+            HistoryExamQuestion historyExamQuestion = BeanUtil.copyProperties(historyExamQuestionDTO, HistoryExamQuestion.class);
+            if(historyExamQuestionDTO.getStandardAnswer().equals(historyExamQuestion.getAnswer())) {
+                historyExamQuestion.setCorrect(1);
+                totalScore = totalScore.add(historyExamQuestionDTO.getScore());
+            }
+            else historyExamQuestion.setCorrect(0);
+            list.add(historyExamQuestion);
+        }
+        Db.executeBatch(list,100, HistoryExamQuestionMapper.class,(mapper,item)->{
+            mapper.updateByQuery(item,new QueryWrapper().where(HISTORY_EXAM_QUESTION.QUESTION_ID.eq(item.getQuestionId())
+                    .and(HISTORY_EXAM_QUESTION.HISTORY_EXAM_ID.eq(item.getHistoryExamId()))));
+        });
+        historyExamService.updateChain().set(HISTORY_EXAM.TOTAL_SCORE,totalScore)
+                .where(HISTORY_EXAM.EXAM_PAPER_ID.eq(historyExamQuestionDTOList.getFirst().getExamPaperId()))
+                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername()))
                 .update();
         return Result.success();
     }

@@ -29,5 +29,7 @@ public class HistoryExamViewer {
     private String optionD;
 
     private String answer;
+    private String standardAnswer;
     private boolean correct;
+    private Integer historyExamId;
 }

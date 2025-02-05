@@ -10,6 +10,7 @@ import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
 
 import java.lang.Integer;
+import java.math.BigDecimal;
 
 /**
  * 实体类。
@@ -33,8 +34,9 @@ public class HistoryExam {
     @Column(value = "exam_paper_id")
     private Integer examPaperId;
 
+    @Column(value="total_score")
+    private BigDecimal totalScore;
+
     @Column(value = "is_delete")
     private Integer isDelete;
-
-
 }

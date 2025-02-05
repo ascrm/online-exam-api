@@ -2,6 +2,7 @@ package com.ascrm.service.impl;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ascrm.entity.DTO.HistoryExamQuestionDTO;
 import com.ascrm.entity.HistoryExamQuestion;
 import com.ascrm.entity.Question;
 import com.ascrm.enums.QuestionTypeEnum;
@@ -65,8 +66,7 @@ public class HistoryExamServiceImpl extends ServiceImpl<HistoryExamMapper, Histo
             ).map(Question::getId).toList();
             QuestionHandler handler = questionHandlerFactory.getHandler(questionTypeEnum.getValue());
             List<QuestionViewer> questionViewerList = handler.getQuestionViewerByIds(ids);
-            List<QuestionViewer> xxxxxxxx = transform1(questionViewerList, questions);
-            List<HistoryExamViewer> historyExamViewers = transform2(xxxxxxxx, historyExamQuestionList);
+            List<HistoryExamViewer> historyExamViewers = transform2(transform1(questionViewerList, questions), historyExamQuestionList);
             CollectionUtils.addAll(list,historyExamViewers);
         }
         return list;
@@ -93,7 +93,9 @@ public class HistoryExamServiceImpl extends ServiceImpl<HistoryExamMapper, Histo
                 if(questionViewer.getId().equals(historyExamQuestion.getQuestionId())){
                     HistoryExamViewer historyExamViewer = BeanUtil.copyProperties(questionViewer, HistoryExamViewer.class);
                     historyExamViewer.setCorrect(historyExamQuestion.getCorrect()==1)
-                            .setAnswer(historyExamQuestion.getAnswer());
+                            .setAnswer(historyExamQuestion.getAnswer())
+                            .setStandardAnswer(questionViewer.getAnswer())
+                            .setHistoryExamId(historyExamQuestion.getHistoryExamId());
                     list.add(historyExamViewer);
                 }
             }
