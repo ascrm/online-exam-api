@@ -2,14 +2,13 @@ server:
   port: 8080
 
 spring:
-  config:
-    import:
-      - optional:classpath:application-dev.yml
+  profiles:
+    active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${dev.datasource.url}
-    username: ${dev.datasource.username}
-    password: ${dev.datasource.password}
+    url: ${spring.datasource.url}
+    username: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   output:
     ansi:
       enabled: always
@@ -32,5 +31,5 @@ sa-token:
   is-log: true
 
 sms:
-  access-key: ${dev.sms.access-key}
-  secret-key: ${dev.sms.secret-key}
+  access-key: ${sms.access-key}
+  secret-key: ${sms.secret-key}
