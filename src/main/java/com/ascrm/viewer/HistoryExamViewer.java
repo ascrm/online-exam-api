@@ -32,4 +32,7 @@ public class HistoryExamViewer {
     private String standardAnswer;
     private boolean correct;
     private Integer historyExamId;
+
+    private BigDecimal totalScore;
+    private BigDecimal passingScore;
 }

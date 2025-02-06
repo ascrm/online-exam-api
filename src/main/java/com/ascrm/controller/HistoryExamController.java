@@ -1,24 +1,25 @@
 package com.ascrm.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ascrm.entity.*;
 import com.ascrm.entity.DTO.HistoryExamQuestionDTO;
-import com.ascrm.entity.ExamQuestion;
-import com.ascrm.entity.HistoryExam;
-import com.ascrm.entity.HistoryExamQuestion;
-import com.ascrm.entity.Result;
 import com.ascrm.mapper.HistoryExamQuestionMapper;
+import com.ascrm.service.ExamPaperService;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamQuestionService;
 import com.ascrm.service.HistoryExamService;
 import com.ascrm.utils.UserHolder;
 import com.ascrm.viewer.HistoryExamViewer;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.row.Db;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,8 @@ public class HistoryExamController {
     private final ExamQuestionService examQuestionService;
 
     private final HistoryExamQuestionService historyExamQuestionService;
+
+    private final ExamPaperService examPaperService;
 
     /**
      * 创建历史记录
@@ -112,10 +115,43 @@ public class HistoryExamController {
     }
 
     /**
-     * 查询所有历史记录
+     * 查询所有题目历史记录
      */
     @GetMapping("/historyExamQuestions")
     public Result<List<HistoryExamViewer>> getHistoryExamQuestionList(Integer examPaperId) {
         return Result.success(historyExamService.getHistoryExamQuestionList(examPaperId));
+    }
+
+    /**
+     * 查询所有已经考完试的试卷记录(分页查询)
+     */
+    @GetMapping("/historyExams")
+    public Result<PageResult<HistoryExamViewer>> getHistoryExamList(Integer pageNum,Integer pageSize) {
+        Page<HistoryExam> page = historyExamService.page(new Page<>(pageNum, pageSize), new QueryWrapper().where(HISTORY_EXAM.IS_DELETE.eq(0)
+                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername()))));
+        List<HistoryExamViewer> list = getHistoryExamViewers(page);
+        PageResult<HistoryExamViewer> pageResult = new PageResult<>();
+        pageResult.setPageSize(pageSize)
+                .setPageNum(pageNum)
+                .setTotal(page.getTotalRow())
+                .setList(list);
+        return Result.success(pageResult);
+    }
+
+    private @NotNull List<HistoryExamViewer> getHistoryExamViewers(Page<HistoryExam> page) {
+        List<HistoryExam> historyExamList = page.getRecords();
+        List<HistoryExamViewer> list=new ArrayList<>();
+        historyExamList.forEach(historyExam -> {
+            HistoryExamViewer historyExamViewer = new HistoryExamViewer();
+            ExamPaper examPaper = examPaperService.getById(historyExam.getExamPaperId());
+            historyExamViewer.setScore(historyExam.getTotalScore())
+                    .setCreatedAt(historyExam.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                    .setId(examPaper.getId())
+                    .setName(examPaper.getName())
+                    .setTotalScore(examPaper.getTotalScore())
+                    .setPassingScore(examPaper.getPassingScore());
+            list.add(historyExamViewer);
+        });
+        return list;
     }
 }

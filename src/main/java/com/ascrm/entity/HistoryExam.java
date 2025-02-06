@@ -11,6 +11,7 @@ import com.mybatisflex.annotation.Table;
 
 import java.lang.Integer;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 实体类。
@@ -36,6 +37,9 @@ public class HistoryExam {
 
     @Column(value="total_score")
     private BigDecimal totalScore;
+
+    @Column(value = "created_at")
+    private LocalDateTime createdAt;
 
     @Column(value = "is_delete")
     private Integer isDelete;
