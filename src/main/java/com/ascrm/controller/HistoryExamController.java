@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ascrm.entity.table.ExamPaperTableDef.EXAM_PAPER;
 import static com.ascrm.entity.table.ExamQuestionTableDef.EXAM_QUESTION;
 import static com.ascrm.entity.table.HistoryExamQuestionTableDef.HISTORY_EXAM_QUESTION;
 import static com.ascrm.entity.table.HistoryExamTableDef.HISTORY_EXAM;
@@ -123,12 +124,17 @@ public class HistoryExamController {
     }
 
     /**
-     * 查询所有已经考完试的试卷记录(分页查询)
+     * 查询所有已经考完试的试卷记录(分页条件查询)
      */
     @GetMapping("/historyExams")
-    public Result<PageResult<HistoryExamViewer>> getHistoryExamList(Integer pageNum,Integer pageSize) {
+    public Result<PageResult<HistoryExamViewer>> getHistoryExamList(Integer pageNum,Integer pageSize,
+                                                                    @RequestParam(value = "name",required = false) String examPaperName) {
+        List<ExamPaper> examPaperList = examPaperService.list(new QueryWrapper().where(EXAM_PAPER.IS_DELETE.eq(0))
+                .and(EXAM_PAPER.NAME.like(examPaperName)));
+        List<Integer> ids = examPaperList.stream().map(ExamPaper::getId).toList();
         Page<HistoryExam> page = historyExamService.page(new Page<>(pageNum, pageSize), new QueryWrapper().where(HISTORY_EXAM.IS_DELETE.eq(0)
-                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername()))));
+                .and(HISTORY_EXAM.USERNAME.eq(UserHolder.getUsername())))
+                .and(HISTORY_EXAM.EXAM_PAPER_ID.in(ids)));
         List<HistoryExamViewer> list = getHistoryExamViewers(page);
         PageResult<HistoryExamViewer> pageResult = new PageResult<>();
         pageResult.setPageSize(pageSize)
