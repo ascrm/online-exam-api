@@ -10,6 +10,7 @@ import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class SingleQuestionHandler implements QuestionHandler{
     @Override
     public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
         List<QuestionViewer> list = new ArrayList<>();
+        if(CollectionUtils.isEmpty(ids)) ids=List.of(0);
         List<SingleChoiceQuestion> singleChoiceQuestions = singleChoiceQuestionMapper.selectListByQuery(new QueryWrapper()
                 .where(SINGLE_CHOICE_QUESTION.QUESTION_ID.in(ids))
                 .and(SINGLE_CHOICE_QUESTION.IS_DELETE.eq(0)));

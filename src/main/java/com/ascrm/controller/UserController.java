@@ -2,6 +2,7 @@ package com.ascrm.controller;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
 import com.ascrm.converter.UserConverter;
+import com.ascrm.entity.DTO.UserDTO;
 import com.ascrm.entity.ExamPaper;
 import com.ascrm.entity.PageResult;
 import com.ascrm.entity.Result;
@@ -15,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.ascrm.entity.table.UserTableDef.USER;
 
@@ -33,16 +33,20 @@ public class UserController {
     private final UserConverter userConverter;
 
     /**
-     * 分页查询用户
+     * 分页条件查询用户
      */
-    @GetMapping("/users")
-    private Result<PageResult<UserViewer>> getUsers(@RequestParam("pageNum") int pageNum,
-                                              @RequestParam("pageSize") int pageSize){
-        Page<User> page = userService.page(new Page<>(pageNum, pageSize),new QueryWrapper()
-                .where(USER.IS_DELETE.eq(0)));
+    @PostMapping("/users")
+    private Result<PageResult<UserViewer>> getUsers(@RequestBody UserDTO userDTO){
+        Page<User> page = userService.page(new Page<>(userDTO.getPageNum(), userDTO.getPageSize()), new QueryWrapper()
+                .where(USER.IS_DELETE.eq(0))
+                .and(USER.USERNAME.eq(userDTO.getUsername()))
+                .and(USER.NICK_NAME.like(userDTO.getNickName()))
+                .and(USER.EMAIL.eq(userDTO.getEmail()))
+                .and(USER.PHONE.eq(userDTO.getPhone()))
+        );
         PageResult<UserViewer> pageResult = new PageResult<>();
-        pageResult.setPageSize(pageSize)
-                .setPageNum(pageNum)
+        pageResult.setPageSize(userDTO.getPageSize())
+                .setPageNum(userDTO.getPageNum())
                 .setTotal(page.getTotalRow())
                 .setList(userConverter.to(page.getRecords()));
         return Result.success(pageResult);
@@ -93,22 +97,5 @@ public class UserController {
                 .where(USER.ID.in(Arrays.asList(ids.split(","))))
                 .update();
         return Result.success();
-    }
-
-    /**
-     * 条件查询用户
-     */
-    @PostMapping("/users/condition")
-    public Result<List<UserViewer>> getUsersByCondition(@RequestBody User user){
-        List<User> userList = userService.queryChain()
-                .select(USER.ALL_COLUMNS)
-                .from(USER)
-                .where(USER.IS_DELETE.eq(0))
-                .and(USER.USERNAME.eq(user.getUsername()))
-                .and(USER.NICK_NAME.like(user.getNickName()))
-                .and(USER.EMAIL.eq(user.getEmail()))
-                .and(USER.PHONE.eq(user.getPhone()))
-                .list();
-        return Result.success(userConverter.to(userList));
     }
 }

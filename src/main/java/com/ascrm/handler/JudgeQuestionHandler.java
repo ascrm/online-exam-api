@@ -10,6 +10,7 @@ import com.mybatisflex.core.query.QueryChain;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.update.UpdateChain;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -78,8 +79,10 @@ public class JudgeQuestionHandler implements QuestionHandler{
     @Override
     public List<QuestionViewer> getQuestionViewerByIds(List<Integer> ids) {
         List<QuestionViewer> list = new ArrayList<>();
+        if(CollectionUtils.isEmpty(ids)) ids=List.of(0);
         List<JudgeQuestion> judgeQuestions = judgeQuestionMapper.selectListByQuery(new QueryWrapper()
-                .where(JUDGE_QUESTION.QUESTION_ID.in(ids)));
+                .where(JUDGE_QUESTION.QUESTION_ID.in(ids))
+                .and(JUDGE_QUESTION.IS_DELETE.eq(0)));
         judgeQuestions.forEach(judgeQuestion -> {
             QuestionViewer questionViewer = BeanUtil.copyProperties(judgeQuestion, QuestionViewer.class);
             questionViewer.setId(judgeQuestion.getQuestionId());
