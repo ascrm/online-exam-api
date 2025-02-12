@@ -28,8 +28,6 @@ public class UserConverter {
     public UserViewer to(User user){
         UserViewer userViewer = BeanUtil.copyProperties(user, UserViewer.class);
         userViewer.setCreatedAt(user.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        userViewer.setRole(user.getRole() == null?"未知":user.getRole() == 1 ? "管理员" : "普通用户");
-        userViewer.setGender(user.getGender() == null ?"未知": user.getGender() == 1 ? "男" : "女");
         return userViewer;
     }
 }

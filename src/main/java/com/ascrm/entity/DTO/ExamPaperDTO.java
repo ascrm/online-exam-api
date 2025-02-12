@@ -12,31 +12,24 @@ import java.time.LocalDateTime;
 
 /**
  * @Author: ascrm
- * @Date: 2025/1/29
+ * @Date: 2025/2/12
  */
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionDTO extends PageParams {
+public class ExamPaperDTO extends PageParams {
 
     private Integer id;
-    private Integer examPaperId;
     private String name;
-    private Integer questionType;
     private String description;
-    private BigDecimal score;
-    private String analysis;
-    private Integer difficulty;
+    private Integer duration;
+    private BigDecimal totalScore;
+    private BigDecimal passingScore;
+    private Integer isPublished;
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Integer isDeleted;
-
-    private String optionA;
-    private String optionB;
-    private String optionC;
-    private String optionD;
-    private String answer;
+    private Integer isDelete;
 }

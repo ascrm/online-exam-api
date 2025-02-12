@@ -32,16 +32,18 @@ public class QuestionController {
     /**
      * 分页查询题目列表
      */
-    @GetMapping("/questions")
-    public Result<PageResult<QuestionViewer>> getExamPaperList(@RequestParam("pageNum") int pageNum,
-                                                               @RequestParam("pageSize") int pageSize) {
-        Page<Question> page = questionService.page(new Page<>(pageNum, pageSize), new QueryWrapper()
+    @PostMapping("/questions")
+    public Result<PageResult<QuestionViewer>> getExamPaperList(@RequestBody QuestionDTO questionDTO) {
+        Page<Question> page = questionService.page(new Page<>(questionDTO.getPageNum(), questionDTO.getPageSize()), new QueryWrapper()
                 .where(QUESTION.IS_DELETED.eq(0))
+                .and(QUESTION.NAME.like(questionDTO.getName()))
+                .and(QUESTION.QUESTION_TYPE.eq(questionDTO.getQuestionType()))
+                .and(QUESTION.DIFFICULTY.eq(questionDTO.getDifficulty()))
                 .orderBy(QUESTION.QUESTION_TYPE.asc())
                 .orderBy(QUESTION.CREATED_AT.desc()));
         PageResult<QuestionViewer> pageResult = new PageResult<>();
-        pageResult.setPageNum(pageNum)
-                .setPageSize(pageSize)
+        pageResult.setPageNum(questionDTO.getPageNum())
+                .setPageSize(questionDTO.getPageSize())
                 .setTotal(page.getTotalRow())
                 .setList(questionConverter.to(page.getRecords()));
         return Result.success(pageResult);

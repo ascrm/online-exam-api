@@ -2,10 +2,10 @@ package com.ascrm.controller;
 
 import com.ascrm.converter.ExamPaperConverter;
 import com.ascrm.entity.*;
+import com.ascrm.entity.DTO.ExamPaperDTO;
 import com.ascrm.service.ExamPaperService;
 import com.ascrm.service.ExamQuestionService;
 import com.ascrm.service.HistoryExamService;
-import com.ascrm.service.impl.ExamQuestionServiceImpl;
 import com.ascrm.utils.UserHolder;
 import com.ascrm.viewer.ExamPaperViewer;
 import com.mybatisflex.core.paginate.Page;
@@ -44,18 +44,20 @@ public class ExamPaperController {
     /**
      * 分页查询试卷列表
      */
-    @GetMapping("/examPapers")
-    public Result<PageResult<ExamPaperViewer>> getExamPaperList(@RequestParam("pageNum") int pageNum,
-                                                          @RequestParam("pageSize") int pageSize) {
-        Page<ExamPaper> page = examPaperService.page(new Page<>(pageNum, pageSize), new QueryWrapper()
+    @PostMapping("/examPapers")
+    public Result<PageResult<ExamPaperViewer>> getExamPaperList(@RequestBody ExamPaperDTO examPaperDTO) {
+        Page<ExamPaper> page = examPaperService.page(new Page<>(examPaperDTO.getPageNum(), examPaperDTO.getPageSize()), new QueryWrapper()
                 .where(EXAM_PAPER.IS_DELETE.eq(0))
+                .and(EXAM_PAPER.NAME.like(examPaperDTO.getName()))
+                .and(EXAM_PAPER.IS_PUBLISHED.eq(examPaperDTO.getIsPublished()))
+                .and(EXAM_PAPER.CREATED_BY.eq(examPaperDTO.getCreatedBy()))
                 .orderBy(EXAM_PAPER.CREATED_AT.desc()));
         PageResult<ExamPaperViewer> pageResult = new PageResult<>();
-        pageResult.setPageNum(pageNum)
-                .setPageSize(pageSize)
+        pageResult.setPageNum(examPaperDTO.getPageNum())
+                .setPageSize(examPaperDTO.getPageSize())
                 .setTotal(page.getTotalRow())
                 .setList(examPaperConverter.to(page.getRecords()));
-        return Result.success("查询成功",pageResult);
+        return Result.success(pageResult);
     }
 
     /**
